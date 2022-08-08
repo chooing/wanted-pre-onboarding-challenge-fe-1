@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { SERVER_URL } from "../component/constants";
+import { useState } from "react";
+import { SERVER_URL } from "../constants";
 
 export const useSignup = () => {
     const [error, setError] = useState(null);

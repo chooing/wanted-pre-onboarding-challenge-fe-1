@@ -1,7 +1,9 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useSignup } from "../../hooks/useSignup";
+import { useValidator } from "../../hooks/useValidator";
 
 export default function Signup() {
+    const { userValidation, errorInfo } = useValidator();
     const [userInfo, setUserInfo] = useState({
         email: "",
         password: "",
@@ -14,20 +16,18 @@ export default function Signup() {
                 ...cur,
                 email: e.target.value,
             }));
-            console.log("email");
         } else if (e.target.type === "password") {
             setUserInfo((cur) => ({
                 ...cur,
                 password: e.target.value,
             }));
-            console.log("password");
         }
+        userValidation(userInfo);
     };
 
     const onSubmitSignup = useCallback(
         (e) => {
             e.preventDefault();
-            console.log("onSubmit");
             signup(userInfo).then((d) => console.log(d));
         },
         [userInfo]
@@ -48,6 +48,7 @@ export default function Signup() {
                         onChange={onChangeInput}
                         required
                     />
+                    {errorInfo.type === "email" && <p>{errorInfo.msg}</p>}
                     <label htmlFor="userPw">비밀번호:</label>
                     <input
                         type="password"
@@ -57,7 +58,10 @@ export default function Signup() {
                         onChange={onChangeInput}
                         required
                     />
-                    <button type="submit">회원가입 하기</button>
+                    {errorInfo.type === "password" && <p>{errorInfo.msg}</p>}
+                    <button type="submit" disabled={errorInfo.status}>
+                        회원가입 하기
+                    </button>
                 </fieldset>
             </form>
         </section>
