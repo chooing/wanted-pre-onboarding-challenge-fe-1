@@ -1,26 +1,31 @@
 import { useState } from "react";
-import { SERVER_URL } from "../constants";
+import { authInstanceAxios } from "../apis";
 
 export const useSignup = () => {
-    const [error, setError] = useState(null);
-    const [isPending, setIsPending] = useState(false);
-    const signup = async (userInfo) => {
-        try {
-            setIsPending(true);
-            const reqURL = `${SERVER_URL}/users/create`;
-            const res = await fetch(reqURL, {
-                method: "POST",
-                headers: { "Content-type": "application/json" },
-                body: JSON.stringify(userInfo),
-            });
+    const [signupResult, setSignupResult] = useState({
+        error: false,
+        resultData: null,
+    });
 
-            const result = await res.json();
-            return result;
-        } catch (error) {
-            setError(error);
-            setIsPending(false);
-            console.error(error);
+    const signUpUser = async (userInfo) => {
+        try {
+            const res = await authInstanceAxios.post(`/users/create`, userInfo);
+            setSignupResult({
+                error: false,
+                resultData: res.data,
+            });
+            return res.data;
+        } catch ({ response }) {
+            if (response.status === 404) {
+                navigator("/error");
+            }
+            setSignupResult(() => ({
+                error: true,
+                resultData: response.data.details,
+            }));
+            return response.data.details;
         }
     };
-    return { error, isPending, signup };
+
+    return { signupResult, signUpUser };
 };

@@ -8,7 +8,11 @@ export default function Signup() {
         email: "",
         password: "",
     });
-    const { error, inPending, signup } = useSignup();
+    const { signupResult, signUpUser } = useSignup();
+
+    useEffect(() => {
+        console.log(signupResult);
+    }, [signupResult]);
 
     const onChangeInput = (e) => {
         if (e.target.type === "email") {
@@ -28,9 +32,10 @@ export default function Signup() {
     const onSubmitSignup = useCallback(
         (e) => {
             e.preventDefault();
-            signup(userInfo).then((d) => console.log(d));
+            signUpUser(userInfo);
+            // .then((d) => console.log(d));
         },
-        [userInfo]
+        [userInfo, signUpUser]
     );
 
     return (
